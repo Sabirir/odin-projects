@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Library</title>
+</head>
+<body>
+    <header>Library</header>
+    <button id="add-book">Add +</button>
+    
+    <form onsubmit="event.preventDefault()"  id="formulaire">
+        <fieldset class="fieldset">
+        <legend>Book Informations</legend>
+        <label for="title">Title
+        <input type="text" name="title" required id="title">
+    </label>
+    <label for="">Author
+        <input type="text" name="author" required id="author">
+    </label>
+        <label for="">Pages
+             <input type="number" name="pages" required id="pages"></label>
+       <label for="">Have you read it ?
+        <input type="text" name="read" id="read">
+    </label>
+        <button id="submit">Submit</button>
+        <button id="cancel">Cancel</button>
+    </fieldset>
+    </form>
+    
+<div id="displayDiv">
+    
+    
+
+</div>
+
+ 
+    <script src="objectConstructor.js"></script>
+
+</body>
+</html>
