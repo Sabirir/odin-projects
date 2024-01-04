@@ -20,10 +20,7 @@ for(let i=0; i<=crudeInfosIds.length -1; i++ ){
         Y:  crudeInfosY[i]
     })
 }
-console.log(crudeInfosIds)
-console.log("crude info length:",crudeInfos[1])
 
-// console.log('infos array:',infos)
 const bassinCentralTableau=infos[0].split('|') 
 const bassinCentral={
     id:Number(bassinCentralTableau[0]),
@@ -102,7 +99,7 @@ const maxKm=vehicles.map(v=>Number(v[5]))
 let fullVehicles=[]
 for(let i=0;i<=vehicleId.length-1;i++){
     fullVehicles.push({
-        siteId:vehicleSiteId[i],
+        id:vehicleSiteId[i],
         vehicleId:vehicleId[i],
         X:vehicleX[i],
         Y:vehicleY[i],
@@ -137,15 +134,31 @@ distances[i]=fullSitesIndexed[i].distance()
 const sortedDistance1=distances.sort(function(a,b){
     return a - b
 })
-// console.log('sorted distance array:',sortedDistance1)
 
 
-// -----  i made a copy because sort() method changes the original array which creates a mess later on
+// -----  i made a copy because sort() method changes the original array which will create a mess later on
 const fullSitesIndexedCopy=fullSitesIndexed.slice()
 const sortedDistance=fullSitesIndexedCopy.sort(function(a,b){
     return a.distance() - b.distance()
 })
 
+const first_site_vehicles=[]
+for(let i=0;i<7;i++){
+    first_site_vehicles.push(fullVehicles[i])
+}
+console.log("before: ",fullVehicles[0].id)
+// console.log("first site vehicles:",first_site_vehicles.reduce(function(prev,current){
+//     return prev + current.capacity
+// },0))
+const second_site_vehicles=[]
+for(let i=7;i<14;i++){
+    second_site_vehicles.push(fullVehicles[i])
+}
+// console.log("second site vehicles:",second_site_vehicles.map(s=>s.vehicleId))
+const third_site_vehicles=[]
+for(let i=14;i<21;i++){
+    third_site_vehicles.push(fullVehicles[i])
+}
 
 const sortedFirstSiteDistance=fullSitesIndexedCopy.slice().sort(function(a,b){
     return a.distanceFirsSite() - b.distanceFirsSite()
@@ -156,22 +169,7 @@ const sortedSecondSiteDistance=fullSitesIndexedCopy.slice().sort(function(a,b){
 const sortedThirdSiteDistance=fullSitesIndexedCopy.slice().sort(function(a,b){
     return a.distanceThirdSite() - b.distanceThirdSite()
 })
-    // console.log('sorted distance from first collect site:',sortedFirstSiteDistance.map(s=>s.distanceFirsSite()))
-    // console.log('sorted distance from second collect site:',sortedSecondSiteDistance.map(s=>s.distanceSecondSite()))
-    // console.log('sorted distance from third collect site:',sortedThirdSiteDistance.map(s=>s.distanceThirdSite()))
-
-
-
-const ditanceMatrix=function(){
-    let mat=[]
-    for(let i=0;i<=fullSitesIndexed.length -1;i++){
-        for(let j=0;j<=fullSitesIndexed.length -1;j++){
-            mat[i][j]=mat[fullSitesIndexed[i]][fullSitesIndexed[j]]
-        }
-    }
-    return mat
-}
-ditanceMatrix()
+    
 const vehicleSites=[{vehicleId:FullInfos[4].id, X:FullInfos[4].X, Y:FullInfos[4].Y},{vehicleId:FullInfos[8].id, X:FullInfos[8].X, Y:FullInfos[8].Y},
 {vehicleId:FullInfos[15].id, X:FullInfos[15].X, Y:FullInfos[15].Y}]
     
@@ -180,14 +178,37 @@ const totalCapacity=fullVehicles.reduce(function(prev,current){ return prev + cu
 console.log('total quantity of milk is :',totalQuantity)
 // console.log('total capacity of vehicles is :',fullVehicles[1].capacity)
 function calculateEucDistance(obj1,obj2){
+    
     return Math.sqrt(Math.pow(obj1.X  - obj2.X,2) + Math.pow(obj1.Y - obj2.Y ,2))
+    
+    
 }
 function vehicleCapacity(vehicle,site){
+    
     if( (vehicle.capacity - site.quantity) > 0){
         return true
     }
 
 }
+// function vehicleCapacity(vehicle, chosenSite) {
+//     if ((vehicle.capacity - chosenSite.quantity) > 0) {
+//         return true;
+//     }
+//     return false;
+// }
+// function vehicleMaxKm(vehicle, chosenSite) {
+//     const distance_vehicle_to_site = calculateEucDistance(vehicle, chosenSite);
+//     const distance_site_to_basin = calculateEucDistance(chosenSite, bassinCentral);
+
+//     if (vehicle.maxKm - distance_vehicle_to_site > 0) {
+//         // If you want to check against the distance to the basin as well, uncomment the following lines:
+//         // if (vehicle.maxKm - (distance_site_to_basin + distance_vehicle_to_site) >= 0) {
+//         //     return true;
+//         // }
+//         return true;
+//     }
+//     return false;
+// }
 function vehicleMaxKm(vehicle,site){
     const distance_vehicle_to_site= calculateEucDistance(vehicle,site)
     const distance_site_to_basin= calculateEucDistance(site,bassinCentral)
@@ -209,75 +230,203 @@ function traceDistance(vehicle){
 let distance=0
 
 }
+function full(array){
+    if (array.length >149){
+        return true
+    }
+    
+}
+const ditanceMatrix=function(){
+    let mat=[]
+    for(let i=0;i<=fullSitesIndexed.length -1 ;i++){
+        mat[i]=[]
+        for(let j=0;j<=fullSitesIndexed.length -1;j++){
+            mat[i][j]= calculateEucDistance(fullSitesIndexed[i],fullSitesIndexed[j])
+        }
+    }
+    return mat
+}
+// const distanceMatorix=ditanceMatrix()
 
+
+const filtered_full_infos=FullInfos.reduce((accumulator, currentValue)=>{
+    if(!accumulator.some(item => item.id === currentValue.id)){
+        accumulator.push(currentValue)
+    }
+    return accumulator
+}, [])
+console.log("full infos:",filtered_full_infos.map(f=>f.id))
+const dist=()=>{
+    let mat=[]
+    for(let i=0; i<=filtered_full_infos.length -1; i++){
+        mat[i]=[]
+        for(let j=0;j<=filtered_full_infos.length -1;j++){
+            mat[i][j]=calculateEucDistance(filtered_full_infos[i],filtered_full_infos[j])
+        }
+    } 
+    return mat
+}
+// matorix=dist()
+// for(let i=0;i<=filtered_full_infos.length-1;i++){
+//     for(let j=0;j<=filtered_full_infos.length-1;j++){
+//         console.log(`Distance between site ${filtered_full_infos[i].id} and site ${filtered_full_infos[j].id}: ${matorix[i][j]}`);
+    
+//     }
+// }
+// console.log("matorix:",)
+const chooseSite=(arr,ele)=>{
+    let mat=[]
+    let pre_chosen_site
+    let pre_copy
+    let chosen_site
+    let sorted_pre
+    for(let x=0;x<=arr.length -1 ; x++){
+        mat.push({idCurrentSite:ele.id,distance:calculateEucDistance(ele,arr[x]),idChosen:arr[x].id,
+        isVisited:arr[x].isVisited,
+        quantity:arr[x].quantity,
+        X:arr[x].X,
+        Y:arr[x].Y})
+
+    }
+    pre_chosen_site=mat.filter(s=>s.isVisited !== true)
+     pre_copy=pre_chosen_site.slice()
+    sorted_pre=pre_copy.sort((a,b)=>a.distance - b.distance)
+    const filtered= sorted_pre.filter(s=>Number(s.distance) !== 0)
+    chosen_site=filtered[0]
+    return chosen_site
+}
+// const chosen_site=chooseSite(fullSitesIndexed,fullSitesIndexed[0])
+// console.log("chosen site: ",chosen_site)
+const vehicles_for_sorting=fullVehicles.slice()
+const first_site_vehicles_for_sorting= first_site_vehicles.slice()
+const second_site_vehicles_for_sorting= second_site_vehicles.slice()
+const third_site_vehicles_for_sorting= third_site_vehicles.slice()
+
+const sorted_first_site_vehicles_by_capacity=first_site_vehicles_for_sorting.sort((a,b)=>b.capacity - a.capacity)
+const sorted_second_site_vehicles_by_capacity=second_site_vehicles_for_sorting.sort((a,b)=>b.capacity - a.capacity)
+const sorted_third_site_vehicles_by_capacity=third_site_vehicles_for_sorting.sort((a,b)=>b.capacity - a.capacity)
+const sorted_sites_concat=sorted_first_site_vehicles_by_capacity.concat(sorted_second_site_vehicles_by_capacity.concat(sorted_third_site_vehicles_by_capacity))
+console.log("vehicles sites concatinated : ",sorted_sites_concat.map(s=>s.capacity))
+console.log("vehicles sites concatinated : ",sorted_sites_concat.map(s=>s.vehicleId))
+
+
+const sorted_vehicles_by_capacity=vehicles_for_sorting.sort((a,b)=>b.capacity - a.capacity)
+// console.log("non sorted vehicles : ",first_site_vehicles.map(v=>v.capacity))
+
+// console.log("sorted vehicles : ",sorted_first_site_vehicles_by_capacity.map(v=>v.capacity))
 function test(){
+    const fullVehiclesCopy2=sorted_sites_concat.slice()
     let visited=[]
     let distance= 0
     let collectedMilk=0
     let i=0
     let j=0
+    let mat=[]
+    
+    let pre_chosen_site
+    let chosen_sites=[fullVehiclesCopy2[0]]
+    
     const fullVehiclesCopy= fullVehicles.slice()
     
-    while (visited.length <= 149 ){
-        console.log("vehicle 1 max km:",fullVehiclesCopy[1].maxKm)
+    const fullSitesIndexedCopy2=fullSitesIndexed.slice()
+    console.log("Initial visited length:", visited.length);
+    while (visited.length !== 150){
+        // console.log("vehicle 1 max km:",fullVehiclesCopy[1].maxKm)
         console.log('i=',i)
         console.log('j=',j)
         // console.log("last site:",fullSitesIndexed[i].id)
-        console.log(`vehicle ${j}capacity:`,fullVehiclesCopy[j].capacity)
-        console.log(`vehicle ${j}max km:`,fullVehiclesCopy[j].maxKm)
+        console.log(`vehicle ${j}capacity:`,fullVehiclesCopy2[j].capacity)
+        console.log(`vehicle ${j}max km:`,fullVehiclesCopy2[j].maxKm)
         console.log('collected milk:',collectedMilk)
         console.log('distance travelled:',distance)
+        console.log(`vehicle's at the start x=${fullVehiclesCopy2[j].X} y=${fullVehiclesCopy2[j].Y} `)
+       
         // 
         // 
-        if( vehicleCapacity(fullVehiclesCopy[j],sortedThirdSiteDistance[i]) && vehicleMaxKm(fullVehiclesCopy[j],sortedThirdSiteDistance[i]))
-        {
-            if(verified(sortedThirdSiteDistance[i])){
-                
-            collectedMilk+=sortedThirdSiteDistance[i].quantity
-            
-            
-            fullVehiclesCopy[j].capacity -= sortedThirdSiteDistance[i].quantity
-            fullVehiclesCopy[j].maxKm -=calculateEucDistance(fullVehiclesCopy[j],sortedThirdSiteDistance[i])
-            //  
-            sortedThirdSiteDistance[i].isVisited = true
-            visited.push(sortedThirdSiteDistance[i])
-            console.log(visited.length)
-            distance += calculateEucDistance(fullVehiclesCopy[j],sortedThirdSiteDistance[i])
-            fullVehiclesCopy[j].X=sortedThirdSiteDistance[i].X
-            fullVehiclesCopy[j].Y=sortedThirdSiteDistance[i].Y
-            }
-            
-            else  {i+=1 }
-            
+        const chosenSite=chooseSite(fullSitesIndexedCopy2,chosen_sites[chosen_sites.length -1])
+        // Add a check for chosenSite being defined
+        if (!chosenSite) {
+            console.error("No valid site chosen.");
+            break  // Exit the loop or handle the error appropriately
         }
+
+       
+        mat.push(chosenSite)
+      
+        const indexId=mat[mat.length -1].idChosen -4
         
-        else j+=1
-        if(sortedThirdSiteDistance[i].id===152) {  fullVehiclesCopy[j].capacity-=sortedThirdSiteDistance[149].quantity;
-            fullVehiclesCopy[j].maxKm-= calculateEucDistance(fullVehiclesCopy[j],sortedThirdSiteDistance[149])
-            ;visited.push(sortedThirdSiteDistance[149]);collectedMilk+=sortedThirdSiteDistance[149].quantity;
-            console.log("terminus",collectedMilk) 
+        // console.log("chosen site(outside):",chosenSite,"chosenId=",chosenSite.idChosen," equiv=",indexId)
+        
+        if( vehicleCapacity(fullVehiclesCopy2[j],fullSitesIndexedCopy2[indexId]) && vehicleMaxKm(fullVehiclesCopy2[j],fullSitesIndexedCopy2[indexId]))
+        {
+            
+            if(verified(fullSitesIndexedCopy2[indexId] ) ){
+               
+                if(chosenSite.idCurrentSite===1 && chosenSite.distance>=50 ){
+                    chosen_sites.push(fullVehiclesCopy2[7])
+                }
+                
+                if(j===4){
+                    chosen_sites.push(fullVehiclesCopy2[5])
+                }
+                
+
+                console.log("chosen site:",chosenSite,"chosenId=",chosenSite.idChosen," equiv=",indexId)
+                console.log("first s vehicles")
+            collectedMilk+=fullSitesIndexedCopy2[indexId].quantity
+            
+            
+            fullVehiclesCopy2[j].capacity -=fullSitesIndexedCopy2[indexId].quantity
+            fullVehiclesCopy2[j].maxKm -=calculateEucDistance(fullVehiclesCopy2[j],fullSitesIndexedCopy2[indexId])
+            //  
+            fullSitesIndexedCopy2[indexId].isVisited = true
+            visited.push(fullSitesIndexedCopy2[indexId])
+            console.log("visited length: ",visited.length)
+            distance += calculateEucDistance(fullVehiclesCopy2[j],fullSitesIndexedCopy2[indexId])
+            fullVehiclesCopy2[j].X=fullSitesIndexedCopy2[indexId].X
+            fullVehiclesCopy2[j].Y=fullSitesIndexedCopy2[indexId].Y
+            console.log(`vehicle's x= ${fullVehiclesCopy2[j].X} y= ${fullVehiclesCopy2[j].Y} `)
+            
+            }
            
-            ; return visited }
-        // collect(fullVehiclesCopy,sortedFirstSiteDistance)
-        // collect(fullVehiclesCopy,sortedSecondSiteDistance)
-        // collect(fullVehiclesCopy,sortedThirdSiteDistance)
-        
+        }
+        else { j+=1}
+       
+        if(visited.length===150){
+            distance+=calculateEucDistance(fullSitesIndexedCopy2[indexId],bassinCentral)
+            mat.push(bassinCentral)
+            console.log('collected milk:',collectedMilk)
+            console.log('distance travelled:',distance)
+            console.log("mat: ", mat.map(s=>s.idChosen))
+            console.log("mat[mat.length -1]= ",mat[mat.length -1])
+            const mat_to_file=mat.map(s=>s.X).join('\n')
+            fs.writeFileSync('path_1_1.txt',mat_to_file)
+          
+
+        }
     }
-    return visited
-    
+    return mat
 }
+test()
+const chosen=test()
+console.log("j14: ",sorted_sites_concat[14])
+console.log("path: ",chosen.map(s=>s.id))
+// console.log("after: ",fullVehicles[0].id)
+// let chosen_sites=[]
+// console.log("closest to first vehicle:",chooseSite(fullSitesIndexed,first_site_vehicles[0]))
+console.log(" site id :",fullSitesIndexed[146].id)
 
-// console.log("last site id :",sortedThirdSiteDistance[149].id)
-// const visited=test()
-// console.log(visited.map(v=>v.quantity))
-
-// console.log(sortedFirstSiteDistance[149].quantity)
-// console.log('distance entre i=34 et le bassin central:', calculateEucDistance(fullSitesIndexed[34],bassinCentral))
-
-
-// const visitedSites=fullSitesIndexed.filter(site=>site.isVisited === true)
-// console.log('visited sites :',visitedSites.map(vs=>`id:${vs.id}, quantity= ${vs.quantity}`))
-// console.log('milk collected in this route:',visitedSites.reduce(function(prev,current){
-//     return prev + current.quantity
-// },0))
-// console.log('vehicle capacity:',fullVehicles[4].capacity)
+// closest
+const distance_tester=(site)=>{
+    let vat=[]
+    let vat_copy
+    for(let i=0; i<=fullSitesIndexed.length-1;i++){
+        vat.push({id:fullSitesIndexed[i].id,distance:calculateEucDistance(site,fullSitesIndexed[i])})
+    }
+    vat_copy=vat.slice()
+    let sorted=vat_copy.sort((a,b)=>a.distance - b.distance)
+    return sorted
+}
+// let site_test=distance_tester(sorted_sites_concat[14])
+// console.log("distances from vehicele  :",site_test.map(s=>s.distance))
+// console.log("after2: ",firstSite.X)
